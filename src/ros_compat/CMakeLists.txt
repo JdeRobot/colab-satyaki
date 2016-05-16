@@ -50,6 +50,8 @@ find_package(OpenCV REQUIRED)
  add_message_files(
    FILES
    Num.msg
+   Pose3d.msg
+   Motors.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -157,7 +159,6 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 target_link_libraries(camdriver ${catkin_LIBRARIES} ${OpenCV_LIBS} ${OpenCV_LIBRARIES})
 add_dependencies(camdriver ros_compat_generate_messages_cpp)
 
-
 add_executable(camclient src/CameraClient.cpp)
 include_directories(${OpenCV_INCLUDE_DIRS}
 		${INTERFACES_CPP_DIR}
@@ -166,7 +167,6 @@ include_directories(${OpenCV_INCLUDE_DIRS}
 		${LIBS_DIR2}/parallelIce
 		${Ice_INCLUDE_DIR}
 		${easyiceconfig_INCLUDE_DIRS})
-
 target_link_libraries(camclient 
 		${catkin_LIBRARIES}
 		${Ice_LIBRARIES}
@@ -178,4 +178,54 @@ target_link_libraries(camclient
 		${LIBS_DIR}/libJderobotInterfaces.so
 		${LIBS_DIR2}/easyiceconfig_cpp/libeasyiceconfig.so
 		)
-add_dependencies(camclient ros_compat_generate_messages_cpp)
+
+find_package(gazebo REQUIRED)
+include_directories(${GAZEBO_INCLUDE_DIRS})
+link_directories(${GAZEBO_LIBRARY_DIRS})
+list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
+
+add_library(laserTurtlebotJde SHARED src/LaserDriver.cc)
+target_link_libraries(laserTurtlebotJde 
+		RayPlugin
+		${catkin_LIBRARIES} 
+		${GAZEBO_LIBRARIES} 
+		${Ice_LIBRARIES}
+		${LIBS_DIR}/libJderobotInterfaces.so
+		${LIBS_DIR2}/easyiceconfig_cpp/libeasyiceconfig.so
+		${LIBS_DIR2}/visionlib/colorspaces/libcolorspacesmm.so)
+
+add_library(pose3dTurtlebotJde SHARED src/Pose3dDriver.cc)
+target_link_libraries(pose3dTurtlebotJde 
+		#RayPlugin
+		${catkin_LIBRARIES} 
+		${GAZEBO_LIBRARIES} 
+		${Ice_LIBRARIES}
+		${LIBS_DIR}/libJderobotInterfaces.so
+		${LIBS_DIR2}/easyiceconfig_cpp/libeasyiceconfig.so)
+		#${LIBS_DIR2}/visionlib/colorspaces/libcolorspacesmm.so)
+
+add_library(camera_dumpTurtlebotJde SHARED src/CameraDump.cc)
+target_link_libraries(camera_dumpTurtlebotJde
+		CameraPlugin
+		${catkin_LIBRARIES} 
+		${GAZEBO_LIBRARIES} 
+		${Ice_LIBRARIES}
+		${OpenCV_LIBS} 
+		${OpenCV_LIBRARIES} 
+		${LIBS_DIR2}/visionlib/colorspaces/libcolorspacesmm.so
+		${LIBS_DIR2}/parallelIce/libparallelIce.so
+		${LIBS_DIR}/libJderobotInterfaces.so
+		${LIBS_DIR2}/easyiceconfig_cpp/libeasyiceconfig.so)
+
+add_library(motorsTurtlebotJde SHARED src/MotorDriver.cc)
+target_link_libraries(motorsTurtlebotJde
+		RayPlugin
+		${catkin_LIBRARIES} 
+		${GAZEBO_LIBRARIES} 
+		${Ice_LIBRARIES}
+		#${OpenCV_LIBS} 
+		#${OpenCV_LIBRARIES} 
+		${LIBS_DIR2}/visionlib/colorspaces/libcolorspacesmm.so
+		${LIBS_DIR2}/parallelIce/libparallelIce.so
+		${LIBS_DIR}/libJderobotInterfaces.so
+		${LIBS_DIR2}/easyiceconfig_cpp/libeasyiceconfig.so)

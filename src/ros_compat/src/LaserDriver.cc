@@ -167,7 +167,7 @@ void *mainLaser(void* v)
 			laserdata.push_back(laser->laserValues[i]*1000);
 		numLaser.numArr = laserdata;
 
-    	ROS_INFO("%ld", numLaser.numArr[0]);
+    	//ROS_INFO("%ld", numLaser.numArr[0]);
     	laser_pub.publish(numLaser);
 		
     	ros::spinOnce();

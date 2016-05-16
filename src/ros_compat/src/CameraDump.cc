@@ -279,7 +279,7 @@ void *myMain(void* v)
 	while (ros::ok()) {
 		Mat frame(camera->image.rows, camera->image.cols, CV_8UC3, camera->image.data);
 		sensor_msgs::ImagePtr image_message = cv_bridge::CvImage(std_msgs::Header(), "bgr8", frame).toImageMsg();
-		ROS_INFO("frame rows: %d", camera->image.rows);
+		//ROS_INFO("frame rows: %d", camera->image.rows);
     	camera_pub.publish(image_message);
     	ros::spinOnce();
 

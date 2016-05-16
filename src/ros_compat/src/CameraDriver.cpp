@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
   	ros::Publisher chatter_pub = n.advertise<ros_compat::Num>("chatter", 1001);
   	image_transport::ImageTransport it(nh);
   	image_transport::Publisher camera_pub = it.advertise("cameratopic", 1000);
-
+	
   	ros::Rate loop_rate(10);
   	int count = 0;
 

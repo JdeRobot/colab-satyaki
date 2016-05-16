@@ -1,0 +1,54 @@
+if (${QT_COMPILE})
+
+    SET(qt_HEADERS robot/robot.h gui/gui.h gui/widget/cameraswidget.h gui/widget/controlvw.h gui/widget/glwidget.h )
+    SET(qt_RESOURCES resources.qrc)
+	
+
+    QT4_ADD_RESOURCES(qt_RESOURCES_RCC ${qt_RESOURCES})
+    QT4_WRAP_CPP(qt_HEADERS_MOC ${qt_HEADERS})
+
+    ADD_DEFINITIONS(${QT_DEFINITIONS})
+
+	SET(source main.cpp depuratewindow.cpp 
+				    robot/actuators.cpp robot/robot.cpp robot/sensors.cpp robot/threadupdaterobot.cpp robot/ros_compat.cpp
+			        pioneer/pioneer.c pioneer/pioneeropengl.c
+			        gui/gui.cpp gui/stategui.cpp gui/threadupdategui.cpp
+			        gui/widget/cameraswidget.cpp gui/widget/controlvw.cpp gui/widget/glwidget.cpp gui/widget/laserwidget.cpp
+			        ${qt_HEADERS_MOC}
+			        ${qt_RESOURCES_RCC})
+
+    include_directories(
+        ${INTERFACES_CPP_DIR}
+        ${LIBS_DIR}/
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${easyiceconfig_INCLUDE_DIRS}
+    )
+
+    link_directories(
+        ${easyiceconfig_LIBRARY_DIRS}
+    )
+
+	#added
+	find_package(catkin REQUIRED COMPONENTS roscpp   std_msgs
+  message_generation
+  cv_bridge
+  image_transport)
+	MESSAGE("catkin libraries found at ${catkin_LIBRARIES}")
+
+    add_executable( kobukiViewer ${source} )
+			       
+    target_link_libraries(kobukiViewer
+        ${CMAKE_THREAD_LIBS_INIT}
+        ${OpenCV_LIBRARIES}
+	    ${QT_LIBRARIES_JDE}
+		${catkin_LIBRARIES}
+        JderobotInterfaces
+        jderobotutil
+		colorspacesmm
+		parallelIce
+        ${easyiceconfig_LIBRARIES}
+        ${ZeroCIce_LIBRARIES}
+		${OPENGL_LIBRARIES} ${GLUT_LIBRARY}
+    )
+ENDIF()
+

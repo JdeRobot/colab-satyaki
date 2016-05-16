@@ -115,9 +115,7 @@ namespace gazebo {
 		ros::NodeHandle n_enc;
   		ros::Publisher enc_pub = n_enc.advertise<ros_compat::Pose3d>("Pose3d", 101);
 		ros::Rate loop_rate(10);
-		//std::cout << "landmark!\n";
-    	
-
+	
 	while (ros::ok()) {
 	    ros_compat::Pose3d pose_enc;
 		
@@ -126,14 +124,6 @@ namespace gazebo {
 		pose_enc.robottheta = base->robotEncoders.theta;
 		pose_enc.robotcos = cos(base->robotEncoders.theta);
 		pose_enc.robotsin = sin(base->robotEncoders.theta);
-
-    	/*numLaser.num = laser->laserValues.size();
-		std::vector<long int> laserdata;
-		for (int i=0; i<numLaser.num; i++)
-			laserdata.push_back(laser->laserValues[i]*1000);
-		numLaser.numArr = laserdata;*/
-
-		//pose_enc
 
     	ROS_INFO("x co-or: %lf", base->robotEncoders.x);
     	enc_pub.publish(pose_enc);

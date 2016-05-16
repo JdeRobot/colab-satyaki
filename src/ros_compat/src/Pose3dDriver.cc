@@ -10,7 +10,6 @@ namespace gazebo {
         pthread_mutex_init(&mutex, NULL);
         pthread_mutex_init(&mutexPose3D, NULL);
         count = 0;
-        //exit(1);
         std::cout << "-----------------constructor Pose3D" << std::endl;
     }
 
@@ -31,8 +30,6 @@ namespace gazebo {
         if (count == 0) {
             count++;
             std::string name = this->model->GetName();
-            //std::cout << "GetName() Pose3D: " << name << std::endl;
-            //namePose3D = std::string("--Ice.Config=" + name + "Pose3D.cfg");
             pthread_t thr_gui;
             pthread_create(&thr_gui, NULL, &Pose3DICE, (void*) this);
         }
@@ -80,14 +77,11 @@ namespace gazebo {
              this->pose->getModel()->SetWorldPose(position);
 
              return 0;
-			//this->getModel();
-        }
+	}
 
 
         virtual jderobot::Pose3DDataPtr getPose3DData(const Ice::Current&) {
             pthread_mutex_lock(&pose->mutex);
-
-            //std::cout << "theta: " << pose->robotPose3D.theta << std::endl;
 
             Pose3DData->x = pose->robotPose3D.x * 1000;
             Pose3DData->y = pose->robotPose3D.y * 1000;
@@ -114,9 +108,7 @@ namespace gazebo {
     void *Pose3DICE(void* v) {
         gazebo::Pose3D* base = (gazebo::Pose3D*)v;
         char* name = (char*) base->namePose3D.c_str();
-        //Ice::CommunicatorPtr ic;
         int argc = 1;
-        //Ice::PropertiesPtr prop;
         char* argv[] = {name};
 
 		ros::init(argc, argv, "pose3d_driver");
@@ -138,7 +130,7 @@ namespace gazebo {
             pose_enc.q2 = base->robotPose3D.q2;
             pose_enc.q3 = base->robotPose3D.q3;
 
-    		ROS_INFO("x co-or pose: %lf", base->robotPose3D.x);
+    		//ROS_INFO("x co-or pose: %lf", base->robotPose3D.x);
     		pose_pub.publish(pose_enc);
 			
     		ros::spinOnce();
@@ -146,37 +138,6 @@ namespace gazebo {
     		loop_rate.sleep();
     	}
 		exit(0);
-
-        /*try {
-
-            ic = EasyIce::initialize(argc, argv);
-
-
-            prop = ic->getProperties();
-            std::string Endpoints = prop->getProperty("Pose3D.Endpoints");
-            std::cout << "Pose3D Endpoints " << Endpoints << std::endl;
-
-            Ice::ObjectAdapterPtr adapter =
-                    ic->createObjectAdapterWithEndpoints("Pose3D", Endpoints);
-            Ice::ObjectPtr object = new Pose3DI(base);
-
-            adapter->add(object, ic->stringToIdentity("Pose3D"));
-
-            adapter->activate();
-            ic->waitForShutdown();
-        } catch (const Ice::Exception& e) {
-            std::cerr << e << std::endl;
-        } catch (const char* msg) {
-            std::cerr << msg << std::endl;
-        }
-        if (ic) {
-            try {
-                ic->destroy();
-            } catch (const Ice::Exception& e) {
-                std::cerr << e << std::endl;
-            }
-        }*/
-
     }
 
 }
